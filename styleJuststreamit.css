@@ -1,0 +1,162 @@
+@font-face
+{font-family: 'GlacialIndifference';
+src: url('GlacialIndifference.otf') format('opentype');
+}
+
+/*cosmétique de la page*/
+
+body {
+		background:#010101;
+		color: #fefefe;
+		font-family: "GlacialIndifference",Helvetica, sans-serif;
+		font-size: 16pt;
+		font-weight: 400;
+		line-height: 1.75em;
+	}
+
+
+	h1 {background:#fefefe;
+		color: #010101;
+		font-size: 2.5em;
+		line-height: 1.5em;
+		box-sizing: border-box;
+	}
+
+	h2 {
+		font-size: 1.5em;
+		line-height: 1.5em;
+	}
+
+	h3 {
+		font-size: 1.25em;
+		line-height: 1.5em;
+	}
+strong{
+		color: #fff;
+		font-weight: 400;
+	}
+a { transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+		border-bottom: dotted 1px;
+		color: #49bf9d;
+		text-decoration: none;
+	}
+
+	a:hover {
+			border-bottom-color: transparent;
+			color: #49bf9d;
+			text-decoration: none;
+		}
+
+img 
+{border-radius:  80px}
+
+
+	
+ul {
+	list-style: none;
+}
+
+h1{
+	text-align: justify;
+	margin-left: 5%;
+	margin-right: 5%;
+    margin-top: 5%;
+   }
+
+ 
+
+/*organisation de la page*/
+
+body
+	{
+	display:flex;
+	flex-direction: column;
+	align-items: top;
+   }
+
+
+header 
+   {
+	display:flex;
+	justify-content: space-evenly;
+	align-items: baseline;
+   }
+
+/* Navigation */
+
+nav ul
+{
+    list-style-type: none;
+    display: flex;
+}
+
+nav li
+{
+    margin-right: 15px;
+}
+
+nav a
+{
+    font-size: 1em;
+    padding-bottom: 0.2px;
+    text-decoration: none;
+}
+
+nav a:hover
+{
+    color: #760001;
+    border-bottom: 3px solid #760001;
+}
+
+
+
+
+li
+{width: 100%;
+	display: flex;
+justify-content: space-around;}
+
+
+ 
+.bouton 
+{
+		background-color: transparent;
+		border-radius: 0.35em;
+		border: solid 3px #efefef;
+		color: #787878 ;
+		font-weight: 400;
+		height: 3.15em;
+		height: calc(2.75em + 6px);
+		line-height: 2.75em;
+		min-width: 10em;
+		padding: 0 1.5em;
+		text-align: center;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+.boites {
+	display: flex;
+	flex-wrap: wrap;
+	font-size: 1.2em;
+	padding: 0 1.5em;
+}
+
+.film {
+	display: flex;
+	flex-wrap: wrap;
+	font-size: 1.2em;
+	padding: 0 1.5em;
+}
+
+
+
+
+
+
+
+
+
+
+
+	
