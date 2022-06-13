@@ -7,7 +7,8 @@ const GenresList = ["Films_les_mieux_notes", "Comedy", "Crime", "Romance"]
 
 createAllDivMovies();
 
-for (let i = 1; i <= GenresList.length; i++){
+for (let i = 1; i < GenresList.length; i++){
+      console.log(GenresList[i]);
       fetchDataByGenre(GenresList[i],1);
 }
 
@@ -31,10 +32,11 @@ fetch("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score&sort_by=-votes")
 fetchBestMovies(2);
 
 fwd_Mieux_Notes.onclick = () => {
+      fetchBestMoviesFirstPart(2);
       fetchBestMovies(3);
 }
 
-//récupération des films les mieux notés toutes catégories confondues à partir de la 2e page
+//récupération des films les mieux notés toutes catégories confondues 2e page
 function fetchBestMovies(page){
       
       //récupération des films les mieux notés toutes catégories confondues 2eme page
@@ -44,6 +46,25 @@ function fetchBestMovies(page){
             .then(data => {for (let i = 0; i < data.results.length; i++){
                     const getImageUrl_2 = data.results[i].image_url
                     const secondIndex = 5 + i;
+                    if (document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes") != null) {
+                    const billboardGenre = document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes");
+                    billboardGenre.src = getImageUrl_2
+                    } else {
+                        continue
+                    }
+                  }
+                  })
+}
+
+function fetchBestMoviesFirstPart(page){
+      
+      //récupération des films les mieux notés toutes catégories confondues 2eme page
+
+      fetch("http://localhost:8000/api/v1/titles/?page="+page+"&sort_by=-imdb_score&sort_by=-votes")
+            .then(response => response.json())
+            .then(data => {for (let i = 0; i < data.results.length; i++){
+                    const getImageUrl_2 = data.results[i].image_url
+                    const secondIndex = i;
                     if (document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes") != null) {
                     const billboardGenre = document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes");
                     billboardGenre.src = getImageUrl_2
