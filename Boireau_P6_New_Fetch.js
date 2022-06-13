@@ -1,6 +1,6 @@
 
-fwd_Mieux_Notes.onclick = () => {
-}
+
+
 
 const GenresList = ["Films_les_mieux_notes", "Comedy", "Crime", "Romance"]
 
@@ -30,13 +30,16 @@ fetch("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score&sort_by=-votes")
 //récupère les pages suivantes des films les mieux notés
 fetchBestMovies(2);
 
-//récupération des films les mieux notés toutes catégories confondues 1ere page
+fwd_Mieux_Notes.onclick = () => {
+      fetchBestMovies(3);
+}
+
+//récupération des films les mieux notés toutes catégories confondues à partir de la 2e page
 function fetchBestMovies(page){
       
-
       //récupération des films les mieux notés toutes catégories confondues 2eme page
 
-      fetch("http://localhost:8000/api/v1/titles/?page="+page+"e&sort_by=-imdb_score&sort_by=-votes")
+      fetch("http://localhost:8000/api/v1/titles/?page="+page+"&sort_by=-imdb_score&sort_by=-votes")
             .then(response => response.json())
             .then(data => {for (let i = 0; i < data.results.length; i++){
                     const getImageUrl_2 = data.results[i].image_url
