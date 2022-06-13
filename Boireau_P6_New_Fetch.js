@@ -28,7 +28,7 @@ fetch("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score&sort_by=-votes")
                     billboardBestMovie.src = getImageUrl;
                   })
 //récupère les pages suivantes des films les mieux notés
-fetchBestMovies();
+fetchBestMovies(2);
 
 //récupération des films les mieux notés toutes catégories confondues 1ere page
 function fetchBestMovies(page){
@@ -36,7 +36,7 @@ function fetchBestMovies(page){
 
       //récupération des films les mieux notés toutes catégories confondues 2eme page
 
-      fetch("http://localhost:8000/api/v1/titles/?page=2&sort_by=-imdb_score&sort_by=-votes")
+      fetch("http://localhost:8000/api/v1/titles/?page="+page+"e&sort_by=-imdb_score&sort_by=-votes")
             .then(response => response.json())
             .then(data => {for (let i = 0; i < data.results.length; i++){
                     const getImageUrl_2 = data.results[i].image_url
