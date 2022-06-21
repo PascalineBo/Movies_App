@@ -1,24 +1,30 @@
 
 
 const GenresList = ["Films_les_mieux_notes", "Comedy", "Crime", "Romance"]
+const dataGenreList = [0,fetchDataByGenre(GenresList[1],1),fetchDataByGenre(GenresList[2],1),fetchDataByGenre(GenresList[3],1)]
 
-//fonction qui activent la modale
-
-//
+// crée les balises pour les films affichés:
 
 createAllDivMovies();
 
+//va chercher les données à afficher dans les carrousels:
+
 for (let i = 1; i < GenresList.length; i++){
+      fetchDataByGenre(GenresList[i], 1);
       console.log(GenresList[i]);
-      fetchDataByGenre(GenresList[i],1);
-      arrowsOther(GenresList[i]);
+      console.log(dataGenreList[i]);
+      arrowsOther(GenresList[i], dataGenreList[i]);
 }
 
 //récupère la première page des films les mieux notés
+
+let bestMoviesPicsList = [];
+
 fetch("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score&sort_by=-votes")
             .then(response => response.json())
             .then(data => {for (let i = 0; i < data.results.length; i++){
                     const getImageUrl_2 = data.results[i].image_url
+
                     const billboardGenre = document.getElementById("Film"+ i + "Films_les_mieux_notes");
                     billboardGenre.src = getImageUrl_2
                   }
@@ -156,27 +162,40 @@ function arrowsBest(Genre){
 
 // flèches de défilement pour les films des autres catégories:
 
-function arrowsOther(Genre){
+function arrowsOther(Genre, imageUrlsList){
       //flèche de droite
-      const otherFwdArrow = document.getElementById("fwd_"+Genre);
-      let otherFwdArrowClick = 2;
+      const otherFwdArrow = document.getElementById("fwd_"+ Genre);
+      let otherFwdArrowClick = 0;
 
-      otherFwdArrow.addEventListener("click",function() {
-            fetchDataByGenre(Genre,++otherFwdArrowClick);
-            console.log("otherfwdArrowClick = "+otherFwdArrowClick);
-      })
+      otherFwdArrow.addEventListener("click",function(noMoreClick) {
+            otherFwdArrowClick +=1;
+            if (otherFwdArrowClick > 2) {
+                  noMoreClick.preventDefault(); //on ne peut cliquer que 2 fois à droite sur ce carrousel; 
+                  //cas où on clique davantage 
+            } else {
+                  for (let j = 0; j < Math.min(7, imageUrlsList.length - 7*otherFwdArrowClick); j++){ 
+                        if (document.getElementById("Film"+ j + Genre) != null) {
+                        const billboardGenre = document.getElementById("Film"+ j + Genre);
+                        billboardGenre.src = imageUrlsList[7*otherFwdArrowClick + j];
+                        } else {
+                        continue
+                        }
+                        }
+                  console.log("otherfwdArrowClick = "+ otherFwdArrowClick);
+      }
+})
 
       //flèche de gauche
-      const otherBackArrow = document.getElementById('back_'+Genre);
+      const otherBackArrow = document.getElementById('back_'+ Genre);
 
       otherBackArrow.addEventListener("click",function(noRightClick) {
-            if (otherFwdArrowClick == 1) {
+            if (otherFwdArrowClick == 0) {
             noRightClick.preventDefault(); //cas où le carrousel n'a pas encore défilé vers la droite     
       } else {
             otherFwdArrowClick = otherFwdArrowClick - 1; //diminue le numéro de page consultée
-            console.log("otherfwdArrowClick = "+otherFwdArrowClick);
+            console.log("otherfwdArrowClick = "+ otherFwdArrowClick);
             const pageNumber = otherFwdArrowClick;
-            fetchDataByGenre(Genre, pageNumber);
+            showSevenFirstMoviePics(Genre, imageUrlsList, page = pageNumber);
             console.log(otherFwdArrowClick);
       }
       })
@@ -191,6 +210,7 @@ function fetchBestMovies(page){
             .then(response => response.json())
             .then(data => {for (let i = 0; i < data.results.length; i++){
                     const getImageUrl_2 = data.results[i].image_url
+                    bestMoviesPicsList.push(getImageUrl_2);
                     const secondIndex = 5 + i;
                     if (document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes") != null) {
                     const billboardGenre = document.getElementById("Film"+secondIndex+"Films_les_mieux_notes");
@@ -204,12 +224,13 @@ function fetchBestMovies(page){
 
 function fetchBestMoviesFirstPart(page){
       
-      //récupération des films les mieux notés toutes catégories confondues 2eme page
+      //récupération des films les mieux notés toutes catégories confondues 1ere page
 
       fetch("http://localhost:8000/api/v1/titles/?page="+page+"&sort_by=-imdb_score&sort_by=-votes")
             .then(response => response.json())
             .then(data => {for (let i = 0; i < data.results.length; i++){
                     const getImageUrl_2 = data.results[i].image_url
+                    bestMoviesPicsList.push(getImageUrl_2);
                     const secondIndex = i;
                     if (document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes") != null) {
                     const billboardGenre = document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes");
@@ -223,50 +244,59 @@ function fetchBestMoviesFirstPart(page){
 
 //récupération des films les mieux notés par genre
 
-function fetchDataByGenre(Genre,page){
+function fetchDataByGenre(Genre, page){
 
       let imageURLsList = [];
       let secondPage = page + 1;
-      let fetchURLsList = ["http://localhost:8000/api/v1/titles/?genre="+Genre+"&page="+page+"&sort_by=-imdb_score&sort_by=-votes",
-                            "http://localhost:8000/api/v1/titles/?genre="+Genre+"&page="+secondPage+"&sort_by=-imdb_score&sort_by=-votes"];
-
-      fetch(fetchURLsList[0])
-            .then(response2 => response2.json())
-            .then(data => {console.table(data);
-                  for (let i = 0; i < data.results.length; i++){
-              const getImageUrl_2 = data.results[i].image_url;
-              console.log(getImageUrl_2);
-              imageURLsList.push(getImageUrl_2);
-              if (document.getElementById("Film"+ i + Genre) != null) {
-                  const billboardGenre = document.getElementById("Film"+ i + Genre);
-                  billboardGenre.src = getImageUrl_2
-              } else {
-                  continue
-              }
-              }
-            })
-
-      fetch(fetchURLsList[1])
-            .then(response2 => response2.json())
-            .then(data => {console.table(data);
-                  for (let i = 0; i < data.results.length; i++){
-              const getImageUrl_2 = data.results[i].image_url;
-              console.log(getImageUrl_2);
-              imageURLsList.push(getImageUrl_2);
-              const secondIndex = 5 + i;
-              if (document.getElementById("Film"+ secondIndex + Genre) != null) {
-                    const billboardComedy2 = document.getElementById("Film"+ secondIndex + Genre);
-                    billboardComedy2.src = getImageUrl_2
-              } else {
-                  continue
-              }
-              }
-              })
-
-      console.log(imageURLsList)
-    }
-    
-
+      let thirdPage = secondPage + 1;
+      let fourthPage = thirdPage + 1;
+      let URLsList = ["http://localhost:8000/api/v1/titles/?genre="+Genre+"&page="+page+"&sort_by=-imdb_score&sort_by=-votes",
+                              "http://localhost:8000/api/v1/titles/?genre="+Genre+"&page="+secondPage+"&sort_by=-imdb_score&sort_by=-votes",
+                              "http://localhost:8000/api/v1/titles/?genre="+Genre+"&page="+thirdPage+"&sort_by=-imdb_score&sort_by=-votes",
+                              "http://localhost:8000/api/v1/titles/?genre="+Genre+"&page="+fourthPage+"&sort_by=-imdb_score&sort_by=-votes"
+                              ];
+            fetch(URLsList[0]) // met les urls image de la première page dans une liste
+                .then(response2 => response2.json())
+                .then(data => {console.table(data);
+                  for (let j = 0; j < data.results.length; j++){
+                    const getImageUrl_2 = data.results[j].image_url;
+                    console.log(getImageUrl_2);
+                    imageURLsList.push(getImageUrl_2);
+                  };
+                  fetch(URLsList[1]) // puis ajoute les urls image de la deuxième page dans la liste
+                        .then(response2 => response2.json())
+                        .then(data => {console.table(data);
+                        for (let j = 0; j < data.results.length; j++){
+                        const getImageUrl_2 = data.results[j].image_url;
+                        console.log(getImageUrl_2);
+                        imageURLsList.push(getImageUrl_2);
+                        };
+                        fetch(URLsList[2]) // puis ajoute les urls image de la troisième page dans la liste
+                              .then(response2 => response2.json())
+                              .then(data => {console.table(data);
+                              for (let j = 0; j < data.results.length; j++){
+                                    const getImageUrl_2 = data.results[j].image_url;
+                                    console.log(getImageUrl_2);
+                                    imageURLsList.push(getImageUrl_2);
+                              };
+                              fetch(URLsList[3]) // puis ajoute les urls image de la troisième page dans la liste
+                                    .then(response2 => response2.json())
+                                    .then(data => {console.table(data);
+                                    for (let j = 0; j < data.results.length; j++){
+                                          const getImageUrl_2 = data.results[j].image_url;
+                                          console.log(getImageUrl_2);
+                                          imageURLsList.push(getImageUrl_2);
+                                    };
+                                    showSevenFirstMoviePics(Genre, imageURLsList, page = 0); //
+                                    // affiche les 7 premières images de la liste dans le carrousel
+                                    console.log(Genre);
+                                    console.log(imageURLsList);
+                                    });
+                              });
+                        });
+                  })
+      return imageURLsList;
+      }
 
 function createAllDivMovies() {
       for (let i in GenresList) {
@@ -293,3 +323,15 @@ function convertToInternationalCurrencySystem (labelValue) {
       : Math.abs(Number(labelValue));
     }
 
+// affiche les 7 premières images des carrousels:
+function showSevenFirstMoviePics (Genre, imageURLsList, page = 0) {
+      for (let j = 0; j < 7; j++){
+      if (document.getElementById("Film"+ j + Genre) != null) {
+            console.log("Film"+ j + Genre);
+            const billboardGenre = document.getElementById("Film" + j + Genre);
+            billboardGenre.src = imageURLsList[j + (page)*7];
+      } else {
+            continue
+            }
+      }          
+}   
