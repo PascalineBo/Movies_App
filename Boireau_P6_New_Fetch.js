@@ -24,7 +24,7 @@ fetch("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score&sort_by=-votes")
             .then(response => response.json())
             .then(data => {for (let i = 0; i < data.results.length; i++){
                     const getImageUrl_2 = data.results[i].image_url
-
+                    bestMoviesPicsList.push(getImageUrl_2);
                     const billboardGenre = document.getElementById("Film"+ i + "Films_les_mieux_notes");
                     billboardGenre.src = getImageUrl_2
                   }
@@ -122,40 +122,52 @@ fetch("http://localhost:8000/api/v1/titles/?sort_by=-imdb_score&sort_by=-votes")
                                function toggleModal(){
                                     modalContainer.classList.toggle("active")
                                   }
-                              })                    
+                              })
+                        //récupère la page suivantes des films les mieux notés
+                        fetchBestMovies(2);                   
                   })
-//récupère la page suivantes des films les mieux notés
-fetchBestMovies(2);
+
 
 //met des flèches de défilement aux films les mieux notés
-arrowsBest('bestRated');
-
+arrowsBest("Films_les_mieux_notes", bestMoviesPicsList);
 
 
 // flèches de défilement pour les films les mieux notés:
-function arrowsBest(Genre){
+function arrowsBest(Genre, imageUrlsList){
       //flèche de droite
-      const fwdArrow = document.getElementById("fwd_"+Genre);
-      let fwdArrowClick = 2;
+      const otherFwdArrow = document.getElementById("fwd_"+ Genre);
+      let otherFwdArrowClick = 0;
 
-      fwdArrow.addEventListener("click",function() {
-            fetchBestMoviesFirstPart(++fwdArrowClick);
-            console.log("fwdArrowClick = "+fwdArrowClick);
-            fetchBestMovies(fwdArrowClick + 1);
-      })
+      otherFwdArrow.addEventListener("click",function(noMoreClick) {
+            otherFwdArrowClick +=1;
+            if (otherFwdArrowClick > 2) {
+                  noMoreClick.preventDefault(); //on ne peut cliquer que 2 fois à droite sur ce carrousel; 
+                  //cas où on clique davantage 
+            } else {
+                  for (let j = 0; j < Math.min(7, imageUrlsList.length - 7*otherFwdArrowClick); j++){ 
+                        if (document.getElementById("Film"+ j + Genre) != null) {
+                        const billboardGenre = document.getElementById("Film"+ j + Genre);
+                        billboardGenre.src = imageUrlsList[7*otherFwdArrowClick + j];
+                        } else {
+                        continue
+                        }
+                        }
+                  console.log("otherfwdArrowClick = "+ otherFwdArrowClick);
+      }
+})
 
       //flèche de gauche
-      const backArrow = document.getElementById('back_'+Genre);
+      const otherBackArrow = document.getElementById('back_'+ Genre);
 
-      backArrow.addEventListener("click",function(noRightClick) {
-            if (fwdArrowClick == 1) {
-            noRightClick.preventDefault();      
+      otherBackArrow.addEventListener("click",function(noRightClick) {
+            if (otherFwdArrowClick == 0) {
+            noRightClick.preventDefault(); //cas où le carrousel n'a pas encore défilé vers la droite     
       } else {
-            fwdArrowClick = fwdArrowClick - 1; //diminue le numéro de page consultée
-            console.log("fwdArrowClick = "+fwdArrowClick);
-            fetchBestMoviesFirstPart(fwdArrowClick);
-            console.log(fwdArrowClick);
-            fetchBestMovies(fwdArrowClick + 1);
+            otherFwdArrowClick = otherFwdArrowClick - 1; //diminue le numéro de page consultée
+            console.log("otherfwdArrowClick = "+ otherFwdArrowClick);
+            const pageNumber = otherFwdArrowClick;
+            showSevenFirstMoviePics(Genre, imageUrlsList, page = pageNumber);
+            console.log(otherFwdArrowClick);
       }
       })
 }
@@ -203,9 +215,9 @@ function arrowsOther(Genre, imageUrlsList){
 
 //récupération des films les mieux notés toutes catégories confondues 2e page
 function fetchBestMovies(page){
-      
+      const thirdPage = page + 1;
+      const fourthPage = page + 2;
       //récupération des films les mieux notés toutes catégories confondues 2eme page
-
       fetch("http://localhost:8000/api/v1/titles/?page="+page+"&sort_by=-imdb_score&sort_by=-votes")
             .then(response => response.json())
             .then(data => {for (let i = 0; i < data.results.length; i++){
@@ -219,7 +231,42 @@ function fetchBestMovies(page){
                         continue
                     }
                   }
-                  })
+                  showSevenFirstMoviePics ("Films_les_mieux_notes", bestMoviesPicsList, page = 0);
+                  //récupération des films les mieux notés toutes catégories confondues 3eme page
+                  fetch("http://localhost:8000/api/v1/titles/?page="+thirdPage+"&sort_by=-imdb_score&sort_by=-votes")
+                        .then(response => response.json())
+                        .then(data => {for (let i = 0; i < data.results.length; i++){
+                              const getImageUrl_2 = data.results[i].image_url
+                              bestMoviesPicsList.push(getImageUrl_2);
+                              const secondIndex = 5 + i;
+                              if (document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes") != null) {
+                              const billboardGenre = document.getElementById("Film"+secondIndex+"Films_les_mieux_notes");
+                              billboardGenre.src = getImageUrl_2
+                              } else {
+                                    continue
+                              }
+                              }
+                              showSevenFirstMoviePics ("Films_les_mieux_notes", bestMoviesPicsList, page = 0);
+                              //récupération des films les mieux notés toutes catégories confondues 4eme page
+                              fetch("http://localhost:8000/api/v1/titles/?page="+fourthPage+"&sort_by=-imdb_score&sort_by=-votes")
+                                    .then(response => response.json())
+                                    .then(data => {for (let i = 0; i < data.results.length; i++){
+                                          const getImageUrl_2 = data.results[i].image_url
+                                          bestMoviesPicsList.push(getImageUrl_2);
+                                          const secondIndex = 5 + i;
+                                          if (document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes") != null) {
+                                          const billboardGenre = document.getElementById("Film"+secondIndex+"Films_les_mieux_notes");
+                                          billboardGenre.src = getImageUrl_2
+                                          } else {
+                                                continue
+                                          }
+                                          }
+                                          showSevenFirstMoviePics ("Films_les_mieux_notes", bestMoviesPicsList, page = 0);
+                              })
+                  })      
+            })
+            console.log(bestMoviesPicsList);
+            return bestMoviesPicsList;
 }
 
 function fetchBestMoviesFirstPart(page){
@@ -229,7 +276,7 @@ function fetchBestMoviesFirstPart(page){
       fetch("http://localhost:8000/api/v1/titles/?page="+page+"&sort_by=-imdb_score&sort_by=-votes")
             .then(response => response.json())
             .then(data => {for (let i = 0; i < data.results.length; i++){
-                    const getImageUrl_2 = data.results[i].image_url
+                    const getImageUrl_2 = data.results[i].image_url;
                     bestMoviesPicsList.push(getImageUrl_2);
                     const secondIndex = i;
                     if (document.getElementById("Film"+ secondIndex + "Films_les_mieux_notes") != null) {
