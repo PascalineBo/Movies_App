@@ -1,3 +1,4 @@
+// liste des Genres de film qu'on choisit d'afficher sur la page JustStreamIt:
 const GenresList = ["Films_les_mieux_notes", "Comedy", "Crime", "Romance"]
 
 //stockage des données des 20 premiers films récupérés de l'API pour chaque Genre:
@@ -192,7 +193,9 @@ function fetchDataBestMovies() {
                 ];
     fetch(URL_1)
             .then(response => response.json())
-            .then(data => {for (let i = 0; i < data.results.length; i++){
+            .then(data => {
+                    bestMovieDisplay(data);
+                    for (let i = 0; i < data.results.length; i++){
                     const getImageUrl_2 = data.results[i].image_url;
                     const getMovieURL = data.results[i].url;
                     let tupleList = [];
@@ -223,24 +226,7 @@ function convertToInternationalCurrencySystem (labelValue) {
       ? (Math.abs(Number(labelValue)) / 1.0e+6).toFixed(1) + " M"
       : Math.abs(Number(labelValue));
     }
-
-//fonction qui va me servir à limiter les effets de propagation liés à l'évènement "click"
-const dispatchEvent = (Element, type, selector, handler) => {
-    Element.addEventListener(type, (event) => {
-        let el = event.target.closest(selector);
-        if (el) handler.call(el, event); 
-    });
-};
-
-
-
-function openModal() {
-    //active la modale si clic:
-    const getmodalContainer = document.querySelector(".modal-container");
-    //affiche la modale
-    getmodalContainer.classList.toggle("active");
-}
-
+//fonction pour remplir de données les modales du Carrousel, quand on clique sur les images:
 
 function modalCreation(Genre, i, urlMovie){
     fetch(urlMovie)
@@ -293,3 +279,103 @@ function modalCreation(Genre, i, urlMovie){
     }
 
 
+//fonction pour l'affichage des éléments du Meilleur Film:
+
+function bestMovieDisplay(data){
+    //affichage des éléments du meilleur film:
+    //titre
+    const getMovieTitle = data.results[0].title;
+    const bestMovieTitle = document.getElementById('Meilleur_film');
+    bestMovieTitle.innerHTML = "<h2>Meilleur Film: "+getMovieTitle+"</h2><div id=\"Meilleur_film_content\"><img id=\"img_Meilleur_film\" alt = \"affiche du Meilleur Film\"></div>"; 
+    //affiche
+    const getImageUrl = data.results[0].image_url;
+    const billboardBestMovie = document.getElementById('img_Meilleur_film');
+    billboardBestMovie.src = getImageUrl;
+    billboardBestMovie.className = "floatingIMG";
+    //cherche le lien vers la page où se trouvent le résumé et les détails du film:
+    const movieURL = data.results[0].url;
+    console.log(movieURL);
+    fetch(""+movieURL+"")
+        .then(response2 => response2.json())
+        .then(data2 => {
+            console.log(data2);
+            const meilleurFilmContent = document.getElementById("Meilleur_film_content");
+            const divBestMovieRightSide= document.createElement("div");
+            meilleurFilmContent.appendChild(divBestMovieRightSide);
+            //crée la modale du meilleur film
+            const modalContainerDiv = document.createElement("div");
+            divBestMovieRightSide.appendChild(modalContainerDiv);
+            modalContainerDiv.className = "modal-container";
+            modalContainerDiv.classList.add("modal-containerBestMovie");
+            const overlay = document.createElement("div");
+            modalContainerDiv.appendChild(overlay);
+            overlay.className = "overlay modal-trigger";
+            const dialog = document.createElement("div");
+            modalContainerDiv.appendChild(dialog);
+            dialog.className = "modal";
+            const closeModal = document.createElement("button");
+            dialog.appendChild(closeModal);
+            closeModal.className = "close-modal modal-trigger";
+            closeModal.innerHTML = "x";
+            // va chercher et injecte les données du film dans la modale:
+            const movieImage = document.createElement("img");
+            movieImage.src = data2.image_url;
+            movieImage.className = "floatingIMG"
+            dialog.appendChild(movieImage);
+            const movieTitle = document.createElement("h2");
+            dialog.appendChild(movieTitle);
+            movieTitle.innerHTML = data2.title;
+            const pubDate = document.createElement("h4");
+            dialog.appendChild(pubDate);
+            pubDate.innerHTML = "Rated: "+data2.rated+"     - "+data2.genres;
+            const IMDBScore = document.createElement("h5");
+            dialog.appendChild(IMDBScore);
+            IMDBScore.innerHTML = "Score IMDB: "+data2.imdb_score;
+            const director = document.createElement("h5");
+            dialog.appendChild(director);
+            director.innerHTML = "Film Director: "+data2.directors[0];
+            const actors = document.createElement("h5");
+            dialog.appendChild(actors);
+            actors.innerHTML = "Actors: "+data2.actors[0];
+            for (let i = 1; i < data2.actors.length; i++){
+                actors.innerHTML += ", "+data2.actors[i];
+                }
+            const duration = document.createElement("h5");
+            dialog.appendChild(duration);
+            duration.innerHTML = "Duration: "+data2.duration+" min";
+            const country = document.createElement("h5");
+            dialog.appendChild(country);
+            country.innerHTML = "Country: "+data2.countries[0];
+            if (data2.countries.length > 1) {
+                for (let i = 1; i < data2.countries.length; i++){
+                    country.innerHTML += ", "+data2.countries[i];
+                        }
+                        } else {};
+            const boxOffice = document.createElement("h5");
+            dialog.appendChild(boxOffice);
+            const boxOfficeConverted = convertToInternationalCurrencySystem(data2.usa_gross_income);
+            boxOffice.innerHTML = "Box Office: "+boxOfficeConverted;
+            const summary = document.createElement("p");
+            dialog.appendChild(summary);
+            summary.innerHTML = "Summary: "+data2.long_description;                               
+
+            //crée le bouton pour la modale du meilleur film
+            const bestButton = document.createElement("button");
+            bestButton.className = "modal-btn modal-trigger";
+            bestButton.innerHTML = "Plus d'infos";
+            divBestMovieRightSide.appendChild(bestButton);
+            //met un résumé du meilleur film
+            const sumUp = document.createElement("p");
+            sumUp.innerHTML = data2.description;
+            sumUp.id = "bestMovieParagraph";
+            divBestMovieRightSide.appendChild(sumUp);
+            divBestMovieRightSide.style.display = "block"; 
+            //active la modale si clic:
+            const modalContainer = document.querySelector(".modal-containerBestMovie");
+            const modalTriggers = document.querySelectorAll(".modal-trigger");
+            modalTriggers.forEach(trigger => trigger.addEventListener("click", toggleModal));
+            function toggleModal(){
+                modalContainer.classList.toggle("active")
+                    }
+                    })
+                }
