@@ -224,7 +224,7 @@ li
 	cursor: pointer;
   }
   
-  .modal-container {
+.modal-container {
 	/* display: none; */
 	visibility: hidden;
 	position: fixed;
@@ -234,7 +234,7 @@ li
 	height: 100vh;
 	transition: visibility 0.4s;
   }
-  .modal-container.active {
+.modal-container.active {
 	visibility: visible;
   }
   
@@ -318,9 +318,12 @@ li
         overflow-y: auto;
 	  }
 	.modal-container {
-		visibility: hidden;
-		margin-top: 10px;
-		width: 100vw;
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 500px;
+		height: 700px;
 		transition: visibility 0.4s;
 	  }
 

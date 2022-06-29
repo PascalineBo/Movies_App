@@ -41,6 +41,17 @@ function createDivMovies(Genre) {
           modalContainerDiv.classList.add("modal-container"+Genre+i);
           const modaleId = "Modale";
           modalContainerDiv.id = modaleId + i + Genre;
+          //crée les balises pour les modales:
+          const overlay = document.createElement("div");
+          modalContainerDiv.appendChild(overlay);
+          overlay.className = "overlay modal-trigger";
+          const dialog = document.createElement("div");
+          modalContainerDiv.appendChild(dialog);
+          dialog.className = "modal";
+          const closeModal = document.createElement("button");
+          dialog.appendChild(closeModal);
+          closeModal.className = "close-modal modal-trigger"+ Genre + i;
+          closeModal.innerHTML = "x";
           // crée balises pour les images + trigger pour les modales:
           const image = document.createElement("img");
           image.className = "film modal-trigger"+Genre+i;
@@ -49,8 +60,27 @@ function createDivMovies(Genre) {
           const idComedy = document.getElementById(Genre);
           idComedy.appendChild(modalContainerDiv);
           idComedy.appendChild(image);
+          //active la modale si clic:
+          const modalContainer = document.querySelector(".modal-container"+ Genre + i);
+          const modalTriggers = document.querySelectorAll(".modal-trigger" + Genre + i);
+          modalTriggers.forEach(trigger => trigger.addEventListener("click", toggleModal));
+          function toggleModal(){
+                modalContainer.classList.toggle("active")
+                const modalContainerDiv = document.getElementById("Modale"+ i + Genre);
+                //affiche les données de la modale
+                if (modalContainerDiv.firstChild.nextElementSibling.childNodes.length == 1){
+                    const urlMovie = this.title; // this: va chercher attribut title dans l'évènement
+                                                 // (== la page cliquée)
+                    modalCreation(Genre,i,urlMovie);
+                    } else {
+                    //enlève les données de la modale
+                    while (modalContainerDiv.firstChild.nextElementSibling.childNodes.length > 1) {
+                        modalContainerDiv.firstChild.nextElementSibling.removeChild(
+                        modalContainerDiv.firstChild.nextElementSibling.firstChild.nextElementSibling)
+                    }}
         }
     }
+}
 
 // affiche les 7 premières images des carrousels:
 function showSevenFirstMoviePics (Genre, imageURLsList, page = 0) {
@@ -59,7 +89,7 @@ function showSevenFirstMoviePics (Genre, imageURLsList, page = 0) {
           console.log("Film"+ j + Genre);
           const billboardGenre = document.getElementById("Film" + j + Genre);
           billboardGenre.src = imageURLsList[j + (page)*7][0];
-          billboardGenre.title = imageURLsList[j + (page)*7][1];        
+          billboardGenre.title = imageURLsList[j + (page)*7][1];    
           } else {
                 continue
                 }
@@ -85,7 +115,7 @@ function arrows(Genre, imageUrlsList){
                       if (document.getElementById("Film"+ j + Genre) != null) {
                       const billboardGenre = document.getElementById("Film"+ j + Genre);
                       billboardGenre.src = imageUrlsList[7*otherFwdArrowClick + j][0];
-                      billboardGenre.title = imageUrlsList[7*otherFwdArrowClick + j][1];
+                      billboardGenre.title = imageUrlsList[7*otherFwdArrowClick + j][1]; 
                       } else {
                       continue
                       }
@@ -144,9 +174,6 @@ function fetchDataByGenre(Genre) {
                     billboardGenre.src = getImageUrl_2;
                     billboardGenre.title = getMovieURL;
                     arrows(Genre, imageURLsList);
-                    dispatchEvent (document, 'click', '.modal-container', function() {
-                        openModal()
-                    });
                     } else {
                         continue
                     }
@@ -213,3 +240,56 @@ function openModal() {
     //affiche la modale
     getmodalContainer.classList.toggle("active");
 }
+
+
+function modalCreation(Genre, i, urlMovie){
+    fetch(urlMovie)
+        .then(response => response.json())
+        .then(data2 => {
+        const modalContainerDiv = document.getElementById("Modale"+ i + Genre);
+        const dialog = modalContainerDiv.children[1]
+        // va chercher et injecte les données du film dans la modale:
+        const movieImage = document.createElement("img");
+        movieImage.src = data2.image_url;
+        movieImage.className = "floatingIMG"
+        dialog.appendChild(movieImage);
+        const movieTitle = document.createElement("h2");
+        dialog.appendChild(movieTitle);
+        movieTitle.innerHTML = data2.title;
+        const pubDate = document.createElement("h4");
+        dialog.appendChild(pubDate);
+        pubDate.innerHTML = "Rated: "+data2.rated+"     - "+data2.genres;
+        const IMDBScore = document.createElement("h5");
+        dialog.appendChild(IMDBScore);
+        IMDBScore.innerHTML = "Score IMDB: "+data2.imdb_score;
+        const director = document.createElement("h5");
+        dialog.appendChild(director);
+        director.innerHTML = "Film Director: "+data2.directors[0];
+        const actors = document.createElement("h5");
+        dialog.appendChild(actors);
+        actors.innerHTML = "Actors: "+data2.actors[0];
+        for (let i = 1; i < data2.actors.length; i++){
+            actors.innerHTML += ", "+data2.actors[i];
+        }
+        const duration = document.createElement("h5");
+        dialog.appendChild(duration);
+        duration.innerHTML = "Duration: "+data2.duration+" min";
+        const country = document.createElement("h5");
+        dialog.appendChild(country);
+        country.innerHTML = "Country: "+data2.countries[0];
+        if (data2.countries.length > 1) {
+            for (let i = 1; i < data2.countries.length; i++){
+                    country.innerHTML += ", "+data2.countries[i];
+            }
+            } else {};
+        const boxOffice = document.createElement("h5");
+        dialog.appendChild(boxOffice);
+        const boxOfficeConverted = convertToInternationalCurrencySystem(data2.usa_gross_income);
+        boxOffice.innerHTML = "Box Office: "+boxOfficeConverted;
+        const summary = document.createElement("p");
+        dialog.appendChild(summary);
+        summary.innerHTML = "Summary: "+data2.long_description;        
+        })
+    }
+
+
