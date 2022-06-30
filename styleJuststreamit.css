@@ -81,7 +81,6 @@ body
 	{
 	display:flex;
 	flex-direction: column;
-	align-items: top;
    }
 
 
@@ -187,12 +186,37 @@ li
 .carrousel {
 	display: flex;
 	align-items: flex-start;
-	flex: wrap;
+	flex-wrap: wrap;
 	font-size: 1.2em;
 }
 
 .floatingIMG {
 	float:left;
+}
+
+.play{
+	background:#fefefe;
+	color: #010101;
+	font-weight: bold;
+	padding: 10px 14px;
+	font-size: 18px;
+	margin: 100px auto;
+	height: 50%;
+	max-height: 50px;
+	min-width: 150px;
+	cursor: pointer;
+	display: inline-block;
+}
+
+.layOut{
+margin-top: 150px;
+margin-left: 100px;
+display: flex;
+justify-content: center;
+}
+
+#bestMovieRightSide {
+	display: block;
 }
 
 #img_Meilleur_film {
@@ -208,7 +232,7 @@ li
 }
 
 #bestMovieParagraph {
-	padding: 50px;
+	padding: 10px;
 	font-size: 1.5em;
 }
 
@@ -217,7 +241,7 @@ li
 	padding: 10px 14px;
 	font-size: 18px;
 	margin: 100px auto;
-	display: block;
+	display: inline-block;
 	height: 50%;
 	max-height: 50px;
 	min-width: 150px;
@@ -225,7 +249,6 @@ li
   }
   
 .modal-container {
-	/* display: none; */
 	visibility: hidden;
 	position: fixed;
 	top: 0;
