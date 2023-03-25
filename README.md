@@ -19,7 +19,10 @@ https://github.com/OpenClassrooms-Student-Center/OCMovies-API-EN-FR.git
 `git clone https://github.com/PascalineBo/Movies_App.git`
   
 </li>
-<li> in your terminal, go to your newly created OCMovies-API-EN-FR folder
+<li> in your terminal, navigate to your newly created OCMovies-API-EN-FR folder:
+  
+  `cd OCMovies-API-EN-FR`
+  
 </li>
 <li> to run the API server, please enter the following command in your terminal:
   
