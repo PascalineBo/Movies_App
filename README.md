@@ -1,7 +1,7 @@
 # Movies_App
-Objective: develop a Front-End user interface for a python web app.
+## Objective: develop a Front-End user interface for a python web app.
 
-Result: a web page that displays Movies information, as retrieved for a database.
+## Result: a web page that displays Movies information, as retrieved for a database.
 Languages used: javascript, html, css.
 
 To see the result of that project, please:
