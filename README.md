@@ -8,7 +8,7 @@ To see the result of that project, please:
 <ol>
 <li> install the OCMovies-API project:
   
-The OCMovies-API project is a REST API application to be executed locally in the context of educational projects. It provides movie information from GET http endpoints. The API provides these endpoints to get detailed infomation about movies filtered by various criteria such as genre, IMDB score or year. Endpoints allow users to retrieve information for individual movies or lists of movies.
+The OCMovies-API project is a REST API application to be executed locally in the context of educational projects. It provides movies' information from GET http endpoints. The API provides these endpoints to get detailed infomation about movies filtered by various criteria such as genre, IMDB score or year. Endpoints allow users to retrieve information for individual movies or lists of movies.
 
 Please follow instructions from following repository:
 https://github.com/OpenClassrooms-Student-Center/OCMovies-API-EN-FR.git
