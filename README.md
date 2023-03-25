@@ -1,4 +1,4 @@
-# OC_Projet6
+# Netflox_App
 Objective: develop a Front-End user interface for a python web app.
 
 Result: a web page that displays Movies information, as retrieved for a database.
